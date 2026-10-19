@@ -1,0 +1,120 @@
+/**
+ * TypeTasks - Part 1: Typed Logic Layer
+ *
+ * Data model and pure functions for managing tasks with compile-time type safety.
+ */
+/**
+ * Type guard verifying whether an unknown value is a valid TaskStatus.
+ *
+ * @param value - The unknown value to check
+ * @returns True if value is "todo" | "in-progress" | "done"
+ */
+export function isTaskStatus(value) {
+    return value === "todo" || value === "in-progress" || value === "done";
+}
+/**
+ * Type guard verifying whether an unknown value satisfies the Task interface.
+ * Validates each property (id as number, title as string, status as TaskStatus)
+ * without resorting to `any`.
+ *
+ * @param value - The unknown value to validate
+ * @returns True if the value is a valid Task
+ */
+export function isTask(value) {
+    if (typeof value !== "object" || value === null) {
+        return false;
+    }
+    const candidate = value;
+    return (typeof candidate.id === "number" &&
+        typeof candidate.title === "string" &&
+        isTaskStatus(candidate.status));
+}
+/**
+ * Appends a new task with status "todo" and a unique id to the tasks array.
+ *
+ * @param tasks - The existing list of tasks
+ * @param title - The title of the task to add
+ * @returns A new array containing the existing tasks plus the newly created task
+ */
+export function addTask(tasks, title) {
+    const nextId = tasks.reduce((maxId, task) => (task.id > maxId ? task.id : maxId), 0) + 1;
+    const newTask = {
+        id: nextId,
+        title,
+        status: "todo",
+    };
+    return [...tasks, newTask];
+}
+/**
+ * Marks the task with the matching id as "done".
+ *
+ * @param tasks - The existing list of tasks
+ * @param id - The id of the task to complete
+ * @returns A new array with the target task's status updated to "done"
+ */
+export function completeTask(tasks, id) {
+    return tasks.map((task) => task.id === id ? { ...task, status: "done" } : task);
+}
+/**
+ * Filters tasks by a specific TaskStatus.
+ *
+ * @param tasks - The list of tasks to filter
+ * @param status - The TaskStatus to filter by ("todo" | "in-progress" | "done")
+ * @returns A new array containing only tasks matching the provided status
+ */
+export function filterByStatus(tasks, status) {
+    return tasks.filter((task) => task.status === status);
+}
+// ---------------------------------------------------------------------------
+// Make It Yours: Custom Typed Operations
+// ---------------------------------------------------------------------------
+/**
+ * Removes a task with the matching id from the tasks array.
+ *
+ * @param tasks - The existing list of tasks
+ * @param id - The id of the task to remove
+ * @returns A new array without the task with the specified id
+ */
+export function deleteTask(tasks, id) {
+    return tasks.filter((task) => task.id !== id);
+}
+/**
+ * Advances a task to the next logical state in the workflow:
+ * "todo" -> "in-progress" -> "done". Tasks already "done" remain "done".
+ *
+ * @param tasks - The existing list of tasks
+ * @param id - The id of the task to advance
+ * @returns A new array with the target task advanced to its next status
+ */
+export function advanceTask(tasks, id) {
+    return tasks.map((task) => {
+        if (task.id !== id) {
+            return task;
+        }
+        const nextStatus = task.status === "todo"
+            ? "in-progress"
+            : "done";
+        return { ...task, status: nextStatus };
+    });
+}
+/**
+ * Counts how many tasks exist with a given status.
+ *
+ * @param tasks - The list of tasks to count
+ * @param status - The TaskStatus to count
+ * @returns The count of tasks matching the given status
+ */
+export function countByStatus(tasks, status) {
+    return tasks.filter((task) => task.status === status).length;
+}
+/**
+ * Updates the title of a specific task.
+ *
+ * @param tasks - The existing list of tasks
+ * @param id - The id of the task to update
+ * @param newTitle - The updated title text
+ * @returns A new array with the target task's title updated
+ */
+export function updateTaskTitle(tasks, id, newTitle) {
+    return tasks.map((task) => task.id === id ? { ...task, title: newTitle } : task);
+}

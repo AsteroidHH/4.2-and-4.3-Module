@@ -1,0 +1,26 @@
+{
+  "name": "4.2-and-4.3-module",
+  "version": "1.0.0",
+  "description": "TypeTasks is a type-safe task tracker built with TypeScript.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsteroidHH/4.2-and-4.3-Module.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AsteroidHH/4.2-and-4.3-Module/issues"
+  },
+  "homepage": "https://github.com/AsteroidHH/4.2-and-4.3-Module#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
