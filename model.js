@@ -4,6 +4,32 @@
  * Data model and pure functions for managing tasks with compile-time type safety.
  */
 /**
+ * Type guard verifying whether an unknown value is a valid TaskStatus.
+ *
+ * @param value - The unknown value to check
+ * @returns True if value is "todo" | "in-progress" | "done"
+ */
+export function isTaskStatus(value) {
+    return value === "todo" || value === "in-progress" || value === "done";
+}
+/**
+ * Type guard verifying whether an unknown value satisfies the Task interface.
+ * Validates each property (id as number, title as string, status as TaskStatus)
+ * without resorting to `any`.
+ *
+ * @param value - The unknown value to validate
+ * @returns True if the value is a valid Task
+ */
+export function isTask(value) {
+    if (typeof value !== "object" || value === null) {
+        return false;
+    }
+    const candidate = value;
+    return (typeof candidate.id === "number" &&
+        typeof candidate.title === "string" &&
+        isTaskStatus(candidate.status));
+}
+/**
  * Appends a new task with status "todo" and a unique id to the tasks array.
  *
  * @param tasks - The existing list of tasks

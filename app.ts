@@ -12,7 +12,9 @@ import {
   filterByStatus,
   advanceTask,
   deleteTask,
-  countByStatus
+  countByStatus,
+  isTask,
+  isTaskStatus
 } from "./model.js";
 
 /**
@@ -61,19 +63,10 @@ function loadInitialTasks(): Task[] {
       const parsed: unknown = JSON.parse(saved);
       if (Array.isArray(parsed)) {
         const validated: Task[] = [];
-        for (const item of parsed) {
-          if (
-            typeof item === "object" &&
-            item !== null &&
-            typeof item.id === "number" &&
-            typeof item.title === "string" &&
-            (item.status === "todo" || item.status === "in-progress" || item.status === "done")
-          ) {
-            validated.push({
-              id: item.id,
-              title: item.title,
-              status: item.status as TaskStatus,
-            });
+        const rawItems: readonly unknown[] = parsed;
+        for (const item of rawItems) {
+          if (isTask(item)) {
+            validated.push(item);
           }
         }
         if (validated.length > 0) {
@@ -293,12 +286,7 @@ taskForm.addEventListener("submit", (event: SubmitEvent) => {
 filterChips.forEach((chip) => {
   chip.addEventListener("click", () => {
     const rawFilter = chip.getAttribute("data-filter");
-    if (
-      rawFilter === "all" ||
-      rawFilter === "todo" ||
-      rawFilter === "in-progress" ||
-      rawFilter === "done"
-    ) {
+    if (rawFilter === "all" || isTaskStatus(rawFilter)) {
       currentFilter = rawFilter;
       filterChips.forEach((btn) => btn.classList.remove("active"));
       chip.classList.add("active");

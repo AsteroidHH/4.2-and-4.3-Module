@@ -3,7 +3,7 @@
  *
  * Wires the typed data model to the DOM with zero type errors and strictly typed event handlers.
  */
-import { addTask, completeTask, filterByStatus, advanceTask, deleteTask, countByStatus } from "./model.js";
+import { addTask, completeTask, filterByStatus, advanceTask, deleteTask, countByStatus, isTask, isTaskStatus } from "./model.js";
 // ---------------------------------------------------------------------------
 // DOM Elements (Strictly typed with type casting, no `any`)
 // ---------------------------------------------------------------------------
@@ -38,17 +38,10 @@ function loadInitialTasks() {
             const parsed = JSON.parse(saved);
             if (Array.isArray(parsed)) {
                 const validated = [];
-                for (const item of parsed) {
-                    if (typeof item === "object" &&
-                        item !== null &&
-                        typeof item.id === "number" &&
-                        typeof item.title === "string" &&
-                        (item.status === "todo" || item.status === "in-progress" || item.status === "done")) {
-                        validated.push({
-                            id: item.id,
-                            title: item.title,
-                            status: item.status,
-                        });
+                const rawItems = parsed;
+                for (const item of rawItems) {
+                    if (isTask(item)) {
+                        validated.push(item);
                     }
                 }
                 if (validated.length > 0) {
@@ -245,10 +238,7 @@ taskForm.addEventListener("submit", (event) => {
 filterChips.forEach((chip) => {
     chip.addEventListener("click", () => {
         const rawFilter = chip.getAttribute("data-filter");
-        if (rawFilter === "all" ||
-            rawFilter === "todo" ||
-            rawFilter === "in-progress" ||
-            rawFilter === "done") {
+        if (rawFilter === "all" || isTaskStatus(rawFilter)) {
             currentFilter = rawFilter;
             filterChips.forEach((btn) => btn.classList.remove("active"));
             chip.classList.add("active");
